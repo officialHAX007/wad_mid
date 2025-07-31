@@ -9,24 +9,27 @@ function App() {
   const itemRef = useRef();
   const qtyRef = useRef();
   const discountRef = useRef();
+
   const [products, setProducts] = useState([]);
   const [ppu, setPpu] = useState(0);
   const [dataItems, setDataItems] = useState([]);
+  const [selectedCode, setSelectedCode] = useState("");
 
+  // Fetch products.json on load
   useEffect(() => {
-    fetch("/products.json")
+    fetch("/wad_mid/products.json")
+ // <-- important for GitHub Pages
       .then((res) => res.json())
       .then((data) => {
         setProducts(data);
-        if (data.length > 0) setPpu(data[0].price);
+        if (data.length > 0) {
+          setSelectedCode(data[0].code);
+          setPpu(data[0].price);
+        }
       });
   }, []);
 
-  const productChange = () => {
-    const selected = products.find((p) => p.code === itemRef.current.value);
-    if (selected) setPpu(selected.price);
-  };
-
+  // Add item to list
   const addItem = () => {
     const selected = products.find((p) => p.code === itemRef.current.value);
     const qty = parseInt(qtyRef.current.value);
@@ -65,15 +68,23 @@ function App() {
 
   return (
     <Container sx={{ mt: 4 }}>
+      <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
+        Quotation Generator
+      </Typography>
+
       <Grid container spacing={2}>
         <Grid item xs={12} md={4}>
           <FormControl fullWidth sx={{ mb: 2 }}>
             <InputLabel>Item</InputLabel>
             <Select
               inputRef={itemRef}
-              defaultValue={products[0]?.code || ""}
+              value={selectedCode}
               label="Item"
-              onChange={productChange}
+              onChange={(e) => {
+                setSelectedCode(e.target.value);
+                const selected = products.find((p) => p.code === e.target.value);
+                if (selected) setPpu(selected.price);
+              }}
             >
               {products.map((p) => (
                 <MenuItem key={p.code} value={p.code}>
