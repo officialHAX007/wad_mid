@@ -1,1 +1,5 @@
-# wad_mid
+<<<<<<< HEAD
+# Your local version
+=======
+# Remote version
+>>>>>>> origin/main
